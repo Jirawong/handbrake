@@ -7,7 +7,12 @@ package com.linksinnovation.handbrake.service;
 
 import com.linksinnovation.handbrake.model.HandBrake;
 import com.linksinnovation.handbrake.utils.FFMPEGUtils;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,29 +22,32 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConvertService {
 
+    private static final ExecutorService es = Executors.newFixedThreadPool(2);
+
     public String convert(HandBrake handBrake) throws Exception {
-        List<String> props = FFMPEGUtils.createProps(handBrake.getInput());
+        List<String> props = FFMPEGUtils.createProps("/mnt/data/source/" + handBrake.getUuid());
         switch (handBrake.getQuality()) {
             case "1080":
-//                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_1080.mp4", "1080");
-                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_1080p", "1080");
+                props = FFMPEGUtils.addScale(props, "/mnt/data/convert/" + handBrake.getUuid() + "/1080p", "1080");
             case "720":
-//                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_720.mp4", "720");
-                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_720p", "720");
+                props = FFMPEGUtils.addScale(props, "/mnt/data/convert/" + handBrake.getUuid() + "/720p", "720");
             case "480":
-//                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_480.mp4", "480");
-                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_480p", "480");
+                props = FFMPEGUtils.addScale(props, "/mnt/data/convert/" + handBrake.getUuid() + "/480p", "480");
             case "320":
-//                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_320.mp4", "320");
-                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_320p", "320");
-//            case "240":
-////                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_240.mp4", "240");
-//                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_240p", "240");
-//            case "140":
-////                HandBrakeUtils.convert(handBrake.getInput(), handBrake.getOutput() + "_140.mp4", "140");
-//                props = FFMPEGUtils.addScale(props, handBrake.getOutput() + "_140p", "140");
+                props = FFMPEGUtils.addScale(props, "/mnt/data/convert/" + handBrake.getUuid() + "/320p", "320");
         }
-        FFMPEGUtils.convert(props);
+        execute(props, handBrake);
         return "done";
+    }
+
+    private void execute(List<String> props, HandBrake handBrake) throws IOException, InterruptedException {
+        es.execute(() -> {
+            try {
+                FFMPEGUtils.convert(props, handBrake);
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(ConvertService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
     }
 }

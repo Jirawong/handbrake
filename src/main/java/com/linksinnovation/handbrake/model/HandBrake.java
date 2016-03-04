@@ -10,24 +10,24 @@ package com.linksinnovation.handbrake.model;
  * @author Jirawong Wongdokpuang <jirawong@linksinnovation.com>
  */
 public class HandBrake {
-    private String input;
-    private String output;
+    private String uuid;
+    private Long lecture;
     private String quality;
 
-    public String getInput() {
-        return input;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setInput(String input) {
-        this.input = input;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getOutput() {
-        return output;
+    public Long getLecture() {
+        return lecture;
     }
 
-    public void setOutput(String output) {
-        this.output = output;
+    public void setLecture(Long lecture) {
+        this.lecture = lecture;
     }
 
     public String getQuality() {
@@ -37,6 +37,6 @@ public class HandBrake {
     public void setQuality(String quality) {
         this.quality = quality;
     }
-    
+
     
 }

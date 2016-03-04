@@ -5,6 +5,8 @@
  */
 package com.linksinnovation.handbrake.utils;
 
+import com.linksinnovation.handbrake.model.HandBrake;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class FFMPEGUtils {
         List<String> props = new ArrayList<>();
         props.add(FFMPEG_PATH);
         props.add("-i");
-        props.add("\""+input+"\"");
+        props.add(input);
         return props;
     }
 
@@ -55,10 +57,20 @@ public class FFMPEGUtils {
         return props;
     }
 
-    public static String convert(List<String> props) throws IOException, InterruptedException {
+    public static void convert(List<String> props,HandBrake handBrake) throws IOException, InterruptedException {
+        createFolder(handBrake);
+        
         final ProcessBuilder builder = new ProcessBuilder(props);
         builder.redirectErrorStream(true);
+        builder.redirectOutput(new File("/mnt/data/convert/"+handBrake.getUuid()+"/convert.log"));
         final Process process = builder.start();
-        return "done";
+        process.waitFor();
+    }
+    
+    private static void createFolder(HandBrake handBrake) throws IOException, InterruptedException{
+        final ProcessBuilder builder = new ProcessBuilder("mkdir","/mnt/data/convert/"+handBrake.getUuid());
+        builder.redirectErrorStream(true);
+        final Process process = builder.start();
+        process.waitFor();
     }
 }
