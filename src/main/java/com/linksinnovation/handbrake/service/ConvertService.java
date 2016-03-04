@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConvertService {
 
-    private static final ExecutorService es = Executors.newFixedThreadPool(2);
+    private static final ExecutorService es = Executors.newFixedThreadPool(1);
 
     public String convert(HandBrake handBrake) throws Exception {
         List<String> props = FFMPEGUtils.createProps("/mnt/data/source/" + handBrake.getUuid());
