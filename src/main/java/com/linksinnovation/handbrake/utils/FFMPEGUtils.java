@@ -41,6 +41,8 @@ public class FFMPEGUtils {
         props.add("libx264");
         props.add("-map");
         props.add("0");
+        props.add("-map");
+        props.add("-0:d");
         props.add("-f");
         props.add("segment");
         props.add("-segment_time");
